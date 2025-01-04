@@ -1,0 +1,178 @@
+/* CSS Variables */
+:root {
+  --color-primary: #4a90e2; /* Blue */
+  --color-primary-hover: #357abd; /* Darker Blue */
+  --color-secondary: #718096; /* Gray */
+  --color-success: #38a169; /* Green */
+  --color-error: #e53e3e; /* Red */
+  --color-background: #ffffff; /* Light background */
+  --color-text: #1a202c; /* Dark text */
+  --color-text-light: #f7fafc; /* Light text */
+  --color-border: #e2e8f0; /* Light gray border */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-mono: 'Courier New', monospace;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1a202c; /* Dark background */
+    --color-text: #f7fafc; /* Light text */
+    --color-text-light: #1a202c; /* Dark text */
+    --color-border: #4a5568; /* Darker gray border */
+  }
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App Header */
+.App-header {
+  background-color: var(--color-background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  font-size: 24px;
+}
+
+.App-link {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.App-link:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+button:disabled {
+  background-color: var(--color-secondary);
+  cursor: not-allowed;
+}
+
+/* DApp Content */
+.dapp-content {
+  padding: var(--spacing-xl);
+  background-color: var(--color-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: var(--spacing-md);
+  max-width: 800px;
+  width: 100%;
+}
+
+.dapp-content h1 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Forms */
+input {
+  width: 100%;
+  padding: var(--spacing-sm);
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  margin-bottom: var(--spacing-md);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+/* Utility Classes */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-error {
+  color: var(--color-error);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dapp-content {
+    padding: var(--spacing-md);
+    margin: var(--spacing-sm);
+  }
+
+  .App-header {
+    font-size: 20px;
+  }
+}

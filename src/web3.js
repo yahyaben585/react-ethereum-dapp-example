@@ -1,25 +1,51 @@
-import Web3 from '../node_modules/web3'; // Must specfiy node_modules to avoid importing itself
+import React, { useState, useEffect } from 'react';
+import Web3 from 'web3';
+import { useState } from 'react';
 
-let web3;
-// Instantiate new web3 global instance
-if (typeof window !== 'undefined' && // Check we're on the client-side
-           (typeof window.web3 === 'undefined' ||
-           typeof window.web3.currentProvider === 'undefined')) {
-  window.web3 = new Web3('ws://127.0.0.1:8546');
+function App() {
+  const [web3, setWeb3] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [contract, setContract] = useState(null);
+
+  useEffect(() => {
+    const loadBlockchainData = async () => {
+      if (window.ethereum) {
+        const web3Instance = new Web3(window.ethereum);
+        setWeb3(web3Instance);
+
+        // Request account access
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAccount(accounts[0]);
+
+        const networkId = await web3Instance.eth.net.getId();
+        const networkData = YourContract.networks[networkId];
+        if (networkData) {
+          const abi = YourContract.abi;
+          const address = networkData.address;
+          const contractInstance = new web3Instance.eth.Contract(abi, address);
+          setContract(contractInstance);
+        }
+      } else {
+        alert('Please install MetaMask or another Ethereum wallet.');
+      }
+    };
+
+    loadBlockchainData();
+  }, []);
+
+  return (
+    <div>
+      <h1>Ethereum DApp</h1>
+      {account ? (
+        <div>
+          <p>Connected Account: {account}</p>
+          {/* Add interaction with contract here */}
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
 }
 
-// Instantiate new web3 local instance
-if (typeof window !== 'undefined' && // Check we're on the client-side
-    typeof window.web3 !== 'undefined' &&
-    typeof window.web3.currentProvider !== 'undefined') {
-  web3 = new Web3(window.web3.currentProvider);
-}
-
-// Get current provider
-export function getCurrentProvider() {
-  return web3.currentProvider;
-}
-
-// Export web3 object instance
-const web3ForExport = web3; // To avoid error from exporting non-read-only variable
-export default web3ForExport;
+export default App;

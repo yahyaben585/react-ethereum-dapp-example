@@ -1,60 +1,97 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import feathers from 'feathers/client';
-import hooks from 'feathers-hooks';
-import rest from 'feathers-rest/client';
-import socketio from 'feathers-socketio/client';
-import authentication from 'feathers-authentication-client';
-import io from 'socket.io-client';
-import superagent from 'superagent';
-import config from './config';
+import React, { useState, createContext } from 'react';
+import './App.css';
+import WalletConnection from './WalletConnection';
+import Staking from './Staking';
+import Minting from './Minting';
+import Airdrop from './Airdrop';
+import Loans from './Loans';
 
-const storage = __SERVER__ ? null : require('localforage');
+// Create a Context for shared state
+export const AppContext = createContext();
 
-const host = clientUrl => (__SERVER__ ? `http://${config.apiHost}:${config.apiPort}` : clientUrl);
+const App = () => {
+  const [activeTab, setActiveTab] = useState('staking'); // Default tab
+  const [walletConnected, setWalletConnected] = useState(false); // Wallet connection state
+  const [userBalance, setUserBalance] = useState(0); // User balance state
 
-const configureApp = transport =>
-  feathers().configure(transport).configure(hooks()).configure(authentication({ storage }));
-
-export const socket = io('', { path: host('/ws'), autoConnect: false });
-
-export function createApp(req) {
-  if (req === 'rest') {
-    return configureApp(rest(host('/api')).superagent(superagent));
-  }
-
-  if (__SERVER__ && req) {
-    const app = configureApp(
-      rest(host('/api')).superagent(superagent, {
-        headers: {
-          Cookie: req.get('cookie'),
-          authorization: req.header('authorization') || ''
-        }
-      })
-    );
-
-    const accessToken = req.header('authorization') || (req.cookies && req.cookies['feathers-jwt']);
-    app.set('accessToken', accessToken);
-
-    return app;
-  }
-
-  return configureApp(socketio(socket));
-}
-
-export function withApp(WrappedComponent) {
-  // eslint-disable-next-line react/prefer-stateless-function
-  class WithAppComponent extends Component {
-    static contextTypes = {
-      app: PropTypes.object.isRequired,
-      restApp: PropTypes.object.isRequired
-    };
-
-    render() {
-      const { app, restApp } = this.context;
-      return <WrappedComponent {...this.props} app={app} restApp={restApp} />;
+  // Function to render the active component based on the selected tab
+  const renderComponent = () => {
+    switch (activeTab) {
+      case 'staking':
+        return <Staking />;
+      case 'minting':
+        return <Minting />;
+      case 'airdrop':
+        return <Airdrop />;
+      case 'loans':
+        return <Loans />;
+      default:
+        return <Staking />;
     }
-  }
+  };
 
-  return WithAppComponent;
-}
+  return (
+    <AppContext.Provider
+      value={{
+        walletConnected,
+        setWalletConnected,
+        userBalance,
+        setUserBalance,
+      }}
+    >
+      <div className="min-h-screen bg-gray-100 p-4">
+        {/* Wallet Connection Component */}
+        <WalletConnection />
+
+        {/* Navigation Bar */}
+        <nav className="flex space-x-4 my-4">
+          <button
+            className={`px-4 py-2 rounded ${
+              activeTab === 'staking'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-300 text-gray-700'
+            }`}
+            onClick={() => setActiveTab('staking')}
+          >
+            Staking
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${
+              activeTab === 'minting'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-300 text-gray-700'
+            }`}
+            onClick={() => setActiveTab('minting')}
+          >
+            Minting
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${
+              activeTab === 'airdrop'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-300 text-gray-700'
+            }`}
+            onClick={() => setActiveTab('airdrop')}
+          >
+            Airdrop
+          </button>
+          <button
+            className={`px-4 py-2 rounded ${
+              activeTab === 'loans'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-300 text-gray-700'
+            }`}
+            onClick={() => setActiveTab('loans')}
+          >
+            Loans
+          </button>
+        </nav>
+
+        {/* Render Active Component */}
+        <div className="mt-4">{renderComponent()}</div>
+      </div>
+    </AppContext.Provider>
+  );
+};
+
+export default App;
